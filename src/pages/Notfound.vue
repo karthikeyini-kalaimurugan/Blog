@@ -1,11 +1,11 @@
 <template>
     <div>
-        Firstpage
-    </div>
+        Notfound
+    </div>    
 </template>
 <script>
 export default {
-    name: "Firstpage"
+    name: "Notfound"
 }
 </script>
 <style scoped>
