@@ -84,7 +84,13 @@ export function addPost({id = false, userId, author, title, description}){
                 author: author
             },
             ...initialPosts
-        ]: [];
+        ]: initialPosts.map(p=>{
+            if(p.id==id){
+                p.title = title;
+                p.description = description;
+            }
+            return p;
+        });
         localStorage.setItem(posts_key,JSON.stringify(updatedPosts))
     return { 
         success: true, 
@@ -102,6 +108,24 @@ export function fetchallPosts(userId = false){
         allPosts = existingPosts ? JSON.parse(existingPosts) : [];
     return userId ? allPosts.filter(p=>p.userId==userId) : allPosts;
 } 
+
+export function fetchPost(id){
+    if(!id) return {
+        success: false,
+        msg: 'Id is required!'
+    }
+    let existingPosts = localStorage.getItem(posts_key),
+        allPosts = existingPosts ? JSON.parse(existingPosts) : [];
+        let FilteredPost = allPosts.filter(p=>p.id==id);
+        return FilteredPost.length ? {
+            success: true,
+            data: FilteredPost[0]
+        } : {
+            success: false,
+            data: false
+        }
+} 
+
 
 export function logout(){
     localStorage.removeItem(user_key);

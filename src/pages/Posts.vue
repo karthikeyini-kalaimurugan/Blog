@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h1 class="posttitle">All Posts</h1>
+    <div :key="$route.params.userId">
+        <h1 class="posttitle"><span v-if="!$route.params.userId">All</span><span v-else>My</span> Posts</h1>
         <div class="postwrapper">
             <div v-for="(post) in posts" :key="post.id" class="post">
                 <router-link :to="`/post/${post.id}`" class="link">
@@ -8,28 +8,40 @@
                     <div>Description: {{post.description}}</div>
                     <div>Author: {{post.author}}</div>
                 </router-link>
+                <router-link v-if="userId && post.userId == userId" :to="`${userId}/post/${post.id}`" class="link">Edit Post</router-link>
             </div>
         </div>
     </div>    
 </template>
 <script>
-import {fetchallPosts} from './../db';
+import {fetchallPosts,checkifLoggedIn} from './../db';
 export default {
     name: "Posts",
     created(){
-        this.posts=fetchallPosts();
+        this.updatePosts();
     },
     data(){
         return {
-            posts: [
-            //    {
-            //         id: 1,
-            //         userId: 2,
-            //         title: 'First Post',
-            //         description: 'First Post Description',
-            //         author: 'Karthikeyini senthur'
-            //     }
-            ]
+            userId:false,
+            posts: []
+        }
+    },
+    methods:{
+        updatePosts(){
+            const { userId=false} = this.$route.params;
+            let LoggedInUser = checkifLoggedIn();
+            this.posts=fetchallPosts(userId);
+            if(LoggedInUser.success){
+                this.userId= LoggedInUser.data.userId;
+            }else{
+               if(userId) this.$router.push('/')
+            }
+        }
+    },
+    watch:{
+        '$route.params.userId'(){
+            const { userId=false} = this.$route.params;
+            this.posts=fetchallPosts(userId);
         }
     }
 }

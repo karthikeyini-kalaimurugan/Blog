@@ -17,7 +17,7 @@
     </div>    
 </template>
 <script>
-import {addPost,checkifLoggedIn} from './../db'
+import {addPost,checkifLoggedIn,fetchallPosts} from './../db'
 export default {
     name: "PostCreation",
     created(){
@@ -28,6 +28,15 @@ export default {
             const {username=false,userId=false} = LoggedInUser.data;
             this.post.userId = userId;
             this.post.author = username;
+            if(id){
+                let MyPosts=fetchallPosts(userId);
+                let postExists=MyPosts.filter(p=>p.id==id);
+                if(postExists.length){
+                    this.post = postExists[0];
+                }else{
+                    this.$router.push(`/${userId}/posts`);    
+                }
+            }
         }else{
             this.$router.push('/login');
         }
@@ -60,18 +69,12 @@ export default {
         createOrEditPost(){
             this.errors={};
             if(!this.validateFields()){
-                if(this.post.id){
-                    //edit
+                let status = addPost(this.post);
+                if(status.success){
+                    console.log(status.data);
+                    this.$router.push('/');
                 }else{
-                    // create
-                    console.log(this.post);
-                    let status = addPost(this.post);
-                    if(status.success){
-                        console.log(status.data);
-                        this.$router.push('/posts');
-                    }else{
-                        alert('Something Went Wrong');
-                    }
+                    alert('Something Went Wrong');
                 }
             }
         }

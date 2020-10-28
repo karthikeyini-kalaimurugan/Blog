@@ -11,7 +11,7 @@ export default new VueRouter({
     routes:[
         {
             path: '/',
-            component: Posts
+            component: Posts,
         }, 
         {
             path: '/login',
@@ -22,12 +22,12 @@ export default new VueRouter({
             component: Signup
         }, 
         {
+            path: '/posts/:userId',
+            component:Posts
+        },
+        {
             path: '/post/:id',
             component: Post
-        }, 
-        {
-            path: '/:userId/posts',
-            component: Posts
         }, 
         {
             path: '/:userId/post/:id?',
